@@ -1,15 +1,15 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Api.ViewModels;
 using NUnit.Framework;
-using Api.Models;
 
 namespace Api.Tests
 {
     public class WhenCreatingACart : TestBase
     {
         private HttpResponseMessage _response;
-        private Cart _model;
+        private CartModel _model;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -18,7 +18,7 @@ namespace Api.Tests
                 .CreateRequest("api/cart")
                 .PostAsync();
 
-            _model = await Deserialize<Cart>(_response);
+            _model = await Deserialize<CartModel>(_response);
         }
 
         [Test]

@@ -5,16 +5,16 @@ using NUnit.Framework;
 using Api.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
-using Api.ViewModels;
 using Api.DomainModels;
+using Api.ViewModels;
 
 namespace Api.Tests
 {
-    public class WhenRemovingAProduct : TestBase
+    public class WhenClearingACart : TestBase
     {
         private HttpResponseMessage _response;
         private CartModel _model;
-        private Product _product = new Product { ProductId = 1, Quantity = 1 };
+        private Product _product = new Product { ProductId = 1, Quantity = 2 };
         private int _cartId = 1;
 
         [OneTimeSetUp]
@@ -28,8 +28,9 @@ namespace Api.Tests
 
             await db.SaveChangesAsync(CancellationToken.None);
             
-            _response = await _client
-                .DeleteAsync($"api/cart/{_cartId}/products/{_product.ProductId}/{_product.Quantity}");
+            _response = await _api
+                .CreateRequest($"api/cart/{_cartId}/clear")
+                .PostAsync();
 
             _model = await Deserialize<CartModel>(_response);
         }

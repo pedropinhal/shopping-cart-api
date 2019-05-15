@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Api.Commands;
 using Api.Concrete;
 using Api.Interfaces;
-using Api.Models;
 using Api.Queries;
+using Api.ViewModels;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +24,7 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(Cart), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(CartModel), StatusCodes.Status201Created)]
         public async Task<IActionResult> Create()
         {
             var cart = await _mediator.Send(new CreateCartCommand());
@@ -32,7 +32,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(Cart), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CartModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(int id)
         {
@@ -47,7 +47,7 @@ namespace Api.Controllers
         }
 
         [HttpPost("{id}")]
-        [ProducesResponseType(typeof(Product), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ProductModel), StatusCodes.Status201Created)]
         public async Task<IActionResult> AddProduct(int id, [FromBody] AddProductCommand command)
         {
             command.CartId = id;
@@ -56,9 +56,9 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}/products/{productId}/{quantity}")]
-        [ProducesResponseType(typeof(Cart), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CartModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> RemoveProduct(int id, int productId, int quantity)
+        public async Task<IActionResult> RemoveProduct(int id, int productId, int quantity = 1)
         {
             var command = new RemoveProductCommand { CartId = id, ProductId = productId, Quantity = quantity };
             var cart = await _mediator.Send(command);
@@ -66,7 +66,7 @@ namespace Api.Controllers
         }
 
         [HttpPost("{id}/clear")]
-        [ProducesResponseType(typeof(Cart), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CartModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Clear(int id)
         {

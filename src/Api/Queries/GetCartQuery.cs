@@ -2,18 +2,18 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Api.Interfaces;
-using Api.Models;
+using Api.ViewModels;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Queries
 {
-    public class GetCartQuery : IRequest<Cart>
+    public class GetCartQuery : IRequest<CartModel>
     {
         public int Id { get; set; }
     }
 
-    public class GetCartQueryHandler : IRequestHandler<GetCartQuery, Cart>
+    public class GetCartQueryHandler : IRequestHandler<GetCartQuery, CartModel>
     {
         private readonly IApiDbContext _apiDbContext;
 
@@ -22,10 +22,11 @@ namespace Api.Queries
             _apiDbContext = apiDbContext;
         }
 
-        public async Task<Cart> Handle(GetCartQuery request, CancellationToken cancellationToken)
+        public async Task<CartModel> Handle(GetCartQuery request, CancellationToken cancellationToken)
         {
             return await _apiDbContext
                 .Carts
+                .Select(CartModel.Projection)
                 .Include(c => c.Products)
                 .Where(c => c.Id == request.Id)
                 .SingleOrDefaultAsync(cancellationToken);

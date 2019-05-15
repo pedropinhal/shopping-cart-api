@@ -1,21 +1,22 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Api.DomainModels;
 using Api.Interfaces;
-using Api.Models;
+using Api.ViewModels;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Commands
 {
-    public class RemoveProductCommand : IRequest<Cart>
+    public class RemoveProductCommand : IRequest<CartModel>
     {
         public int CartId { get; set; }
         public int ProductId { get; set; }
         public int Quantity { get; set; }
     }
 
-    public class RemoveProductCommandHandler : IRequestHandler<RemoveProductCommand, Cart>
+    public class RemoveProductCommandHandler : IRequestHandler<RemoveProductCommand, CartModel>
     {
         private readonly IApiDbContext _apiDbContext;
 
@@ -24,16 +25,21 @@ namespace Api.Commands
             _apiDbContext = apiDbContext;
         }
 
-        public async Task<Cart> Handle(RemoveProductCommand request, CancellationToken cancellationToken)
+        public async Task<CartModel> Handle(RemoveProductCommand request, CancellationToken cancellationToken)
         {
-           var product = new Product { Id = request.ProductId, Quantity = request.Quantity };
+            var product = new Product { ProductId = request.ProductId, Quantity = request.Quantity };
 
             var cart = await _apiDbContext
                 .Carts
                 .Include(c => c.Products)
                 .Where(c => c.Id == request.CartId).SingleOrDefaultAsync(cancellationToken);
 
-            var existingProduct = cart.Products.SingleOrDefault(p => p.Id == product.Id);
+            if (cart == null)
+            {
+                return null;
+            }
+
+            var existingProduct = cart.Products.SingleOrDefault(p => p.ProductId == product.ProductId);
 
             if (existingProduct != null)
             {
@@ -46,7 +52,7 @@ namespace Api.Commands
 
             await _apiDbContext.SaveChangesAsync(cancellationToken);
 
-            return cart;
+            return CartModel.Create(cart);
         }
     }
 }

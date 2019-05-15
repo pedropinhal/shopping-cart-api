@@ -2,17 +2,18 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using Api.Models;
 using Api.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
+using Api.ViewModels;
+using Api.DomainModels;
 
 namespace Api.Tests
 {
     public class WhenGettingACart : TestBase
     {
         private HttpResponseMessage _response;
-        private Cart _model;
+        private CartModel _model;
         private int _cartId = 1;
 
         [OneTimeSetUp]
@@ -28,7 +29,7 @@ namespace Api.Tests
                 .CreateRequest($"api/cart/{_cartId}")
                 .GetAsync();
 
-            _model = await Deserialize<Cart>(_response);
+            _model = await Deserialize<CartModel>(_response);
         }
 
         [Test]

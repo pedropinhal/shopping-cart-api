@@ -1,17 +1,17 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Api.DomainModels;
 using Api.Interfaces;
-using Api.Models;
+using Api.ViewModels;
 using MediatR;
 
 namespace Api.Commands
 {
-    public class CreateCartCommand : IRequest<Cart>
+    public class CreateCartCommand : IRequest<CartModel>
     {
-
     }
 
-    public class CreateCartCommandHandler : IRequestHandler<CreateCartCommand, Cart>
+    public class CreateCartCommandHandler : IRequestHandler<CreateCartCommand, CartModel>
     {
         private readonly IApiDbContext _apiDbContext;
 
@@ -20,7 +20,7 @@ namespace Api.Commands
             _apiDbContext = apiDbContext;
         }
 
-        public async Task<Cart> Handle(CreateCartCommand request, CancellationToken cancellationToken)
+        public async Task<CartModel> Handle(CreateCartCommand request, CancellationToken cancellationToken)
         {
             var cart = new Cart();
 
@@ -28,7 +28,7 @@ namespace Api.Commands
             
             await _apiDbContext.SaveChangesAsync(cancellationToken);
 
-            return cart;
+            return CartModel.Create(cart);
         }
     }
 }

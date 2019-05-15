@@ -2,18 +2,18 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Api.Interfaces;
-using Api.Models;
+using Api.ViewModels;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Commands
 {
-    public class ClearCartCommand : IRequest<Cart>
+    public class ClearCartCommand : IRequest<CartModel>
     {
         public int CartId { get; set; }
     }
 
-    public class ClearCartCommandHandler : IRequestHandler<ClearCartCommand, Cart>
+    public class ClearCartCommandHandler : IRequestHandler<ClearCartCommand, CartModel>
     {
         private readonly IApiDbContext _apiDbContext;
 
@@ -22,7 +22,7 @@ namespace Api.Commands
             _apiDbContext = apiDbContext;
         }
 
-        public async Task<Cart> Handle(ClearCartCommand request, CancellationToken cancellationToken)
+        public async Task<CartModel> Handle(ClearCartCommand request, CancellationToken cancellationToken)
         {
             var cart = await _apiDbContext
                .Carts
@@ -39,7 +39,7 @@ namespace Api.Commands
 
             await _apiDbContext.SaveChangesAsync(cancellationToken);
 
-            return cart;
+            return CartModel.Create(cart);
         }
     }
 }
