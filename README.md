@@ -23,11 +23,19 @@ Follow these steps to get your development environment set up:
      ```
      dotnet build
      ```
+  4. Within the `Api.Tests` directory, launch the tests by running:
+     ```
+	 dotnet test
+	 ```  
   4. Within the `Api` directory, launch the api by running:
      ```
 	 dotnet run
+	 ```
+  5. When the api is running, within the `Api.Client` directory, launch the api client console app by running:
+     ```
+	 dotnet run
 	 ```  
-  5. Launch [https://localhost:5001/api](https://localhost:5001/api) in your browser to view the API
+  6. Launch [https://localhost:5001/api](https://localhost:5001/api) in your browser to view the API
 
 ## Technologies
 * .NET Core 2.2
@@ -42,7 +50,7 @@ Throughout this example we consider authentication - authorization functionality
 ## HTTP Methods
 
 ### Create Cart
-A `POST` HTTP request is sent to create a new shopping cart.
+A `POST` HTTP request is sent to create a new shopping cart. The `Location` header is used to link to the newly created resource (the cart) in order for the client to be able to access it without querying anew.
 
 ### Request
 ```
@@ -52,8 +60,98 @@ POST /api/cart
 ### Response
 ```
 201 Created
+Content-Type: application/json; charset=utf-8
+Location: api/cart/{id}
 {
   "id": 1,
   "products": []
 }
 ```
+
+### Get Cart
+A `GET` HTTP request is sent to retrieve shopping cart contents.
+
+### Request
+```
+GET /api/cart/{id}
+```
+
+### Response
+```
+200 OK
+Content-Type: application/json; charset=utf-8
+{
+  "id": 1,
+  "products": [
+    {
+      "productId": 1,
+      "quantity": 1
+    }
+  ]
+}
+```
+
+### Add Product
+A `POST` HTTP request with a `product` json body is sent to `cart` to add products to a shopping cart.
+
+### Request
+```
+POST /api/cart/{id}
+Content-Type: application/json
+{
+    "productId": 1,
+    "quantity": 1
+}
+```
+
+### Response
+```
+201 Created
+Content-Type: application/json; charset=utf-8
+Location: api/cart/{id}
+{
+  "id": 1,
+  "products": [
+    {
+      "productId": 1,
+      "quantity": 1
+    }
+  ]
+}
+```
+
+### Remove Product
+A `DELETE` HTTP request with a is sent to `cart` to remove products from a shopping cart.
+
+### Request
+```
+DELETE /api/cart/{id}/products/{productId}/{quantity}
+```
+
+### Response
+```
+200 OK
+Content-Type: application/json; charset=utf-8
+```
+
+### Clear Cart
+A `POST` HTTP request with a sent clear a shopping cart.
+
+### Request
+```
+POST /api/cart/{id}/clear
+```
+
+### Response
+```
+200 OK
+Content-Type: application/json; charset=utf-8
+```
+
+## Api Client
+
+Within the `Api.Client` directory, there is a console app to demonstrate the use of the `CartClient` library. Simply update the `host` parameter to api url.
+
+### Note
+
+If you are running the client app in a development environment (ie localhost), run `dotnet dev-certs https --trust` to create a self-signed local certificate in order to use the SSL endpoint.
