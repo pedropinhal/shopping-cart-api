@@ -39,3 +39,21 @@ Follow these steps to get your development environment set up:
 Authentication - Authorization
 Throughout this example we consider authentication - authorization functionality to exist and to be provided by a separate microservice. Therefore, a JWT token (or some other token) is supposedly provided by this microservice and included in the Authorization header in all HTTP requests.
 
+## HTTP Methods
+
+### Create Cart
+A `POST` HTTP request is sent to create a new shopping cart.
+
+### Request
+```
+POST /api/cart
+```
+
+### Response
+```
+201 Created
+{
+  "id": 1,
+  "products": []
+}
+```
